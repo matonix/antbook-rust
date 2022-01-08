@@ -1,22 +1,21 @@
 use std::cmp::Reverse;
 
-use proconio::{input, fastout};
+use proconio::{fastout, input};
 
 #[fastout]
 fn main() {
-    input!{
+    input! {
         n: usize,
         mut a: [i32; n]
     }
     println!("{}", solve(n, &mut a));
 }
 
-
 fn solve(n: usize, a: &mut [i32]) -> i32 {
     a.sort_by_key(|w| Reverse(*w));
-    for i in 0..n-2 {
-        if a[i] < a[i+1] + a[i+2] {
-            return a[i] + a[i+1] + a[i+2];
+    for i in 0..n - 2 {
+        if a[i] < a[i + 1] + a[i + 2] {
+            return a[i] + a[i + 1] + a[i + 2];
         }
     }
     return 0;
@@ -25,12 +24,12 @@ fn solve(n: usize, a: &mut [i32]) -> i32 {
 fn _solve(n: usize, a: &mut [i32]) -> i32 {
     a.sort_by_key(|w| Reverse(*w));
     for i in 0..n {
-        for j in i+1..n {
-            for k in j+1..n {
+        for j in i + 1..n {
+            for k in j + 1..n {
                 if a[i] < a[j] + a[k] {
                     return a[i] + a[j] + a[k];
                 }
-            } 
+            }
         }
     }
     return 0;

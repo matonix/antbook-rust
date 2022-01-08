@@ -21,8 +21,8 @@ fn solve(l: i32, _n: usize, x: &[i32]) -> (i32, i32) {
 }
 
 fn _solve(l: i32, _n: usize, x: &[i32]) -> (i32, i32) {
-    let min = (l/2) - x.iter().map(|x| (x - (l/2)).abs()).min().unwrap();
-    let max = (l/2) + x.iter().map(|x| (x - (l/2)).abs()).max().unwrap();
+    let min = (l / 2) - x.iter().map(|x| (x - (l / 2)).abs()).min().unwrap();
+    let max = (l / 2) + x.iter().map(|x| (x - (l / 2)).abs()).max().unwrap();
     return (min, max);
 }
 
