@@ -52,3 +52,7 @@ path = "src/2_1_lake_counting_walk_2d.rs"
 [[bin]]
 name = "2_1_bfs_walk_2d"
 path = "src/2_1_bfs_walk_2d.rs"
+
+[[bin]]
+name = "2_1_permutation"
+path = "src/2_1_permutation.rs"
