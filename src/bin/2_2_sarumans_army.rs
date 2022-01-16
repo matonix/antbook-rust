@@ -1,6 +1,5 @@
 use proconio::input;
-mod binary_search;
-use binary_search::BinarySearch;
+use antbook::binary_search::BinarySearch;
 
 fn main() {
   input! {

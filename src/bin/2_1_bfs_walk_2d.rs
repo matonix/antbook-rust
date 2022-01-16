@@ -1,8 +1,7 @@
 use proconio::marker::Chars;
 use proconio::{fastout, input};
 use std::iter;
-mod walk_2d;
-use walk_2d::{Point, Walk2D};
+use antbook::walk_2d::{Point, Walk2D};
 
 #[fastout]
 fn main() {
