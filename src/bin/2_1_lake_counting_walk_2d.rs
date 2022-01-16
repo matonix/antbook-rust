@@ -1,5 +1,6 @@
 use proconio::marker::Chars;
 use proconio::{fastout, input};
+mod walk_2d;
 use walk_2d::Walk2D;
 
 #[fastout]
