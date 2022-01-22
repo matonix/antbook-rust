@@ -1,4 +1,5 @@
 use proconio::input;
+use std::cmp::max;
 
 fn main() {
   input! {
@@ -22,7 +23,7 @@ fn solve(n: usize, wvs: Vec<(usize, usize)>, w_max: usize) -> usize {
   let mut dp = vec![vec![0; w_max+1]; n+1];
   for (i, &(w, v)) in wvs.iter().enumerate() {
     for j in 0..=w_max {
-      dp[i+1][j] = if j >= w { std::cmp::max(dp[i][j - w] + v, dp[i][j]) } else { dp[i][j] };
+      dp[i+1][j] = if j >= w { max(dp[i][j - w] + v, dp[i][j]) } else { dp[i][j] };
     }
   }
   dp[n][w_max]
