@@ -18,7 +18,7 @@ fn main() {
 
 
 // O(nw^2)
-fn solve_(n: usize, wvs: Vec<(usize, usize)>, w_max: usize) -> usize {
+fn _solve(n: usize, wvs: Vec<(usize, usize)>, w_max: usize) -> usize {
   let mut dp = vec![vec![0; w_max+1]; n+1];
   for (i, &(w, v)) in wvs.iter().enumerate() { // O(n)
     for j in 0..=w_max { // O(w)
