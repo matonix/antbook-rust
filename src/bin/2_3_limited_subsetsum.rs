@@ -1,5 +1,4 @@
 use proconio::input;
-use std::cmp::min;
 
 fn main() {
   input! {
@@ -14,7 +13,7 @@ fn main() {
 // 構成可能かどうかの真理値 f(n, k)
 // f(i + 1, j) = \/h={0..min(j/a[i+1], m[i+1])} f(i, j - h * a[i+1])
 // 考察： 個数制限無しナップサックと類似して、 f(i + 1, j - (h - 1) * a[i+1]) が true ならば f(i + 1, j - h * a[i+1]) も true となるはず
-// f(i + 1, j) = f(i + 1, j - a[i+1]) || f(i, j) if j - a[i] > 0 && j/a[i] <= m[i] ※1つ以上アイテムが置けて、置こうとするアイテムの数 j/a[i] が存在しているアイテムの数 m[i] を超えなければ置ける
+// f(i + 1, j) = f(i + 1, j - a[i+1]) || f(i, j) if j/a[i] > 0 && j/a[i] <= m[i] ※1つ以上アイテムが置けて、置こうとするアイテムの数 j/a[i] が存在しているアイテムの数 m[i] を超えなければ置ける
 //             = f(i, j) otherwise
 // f(_, 0) = true
 // f(_, _) = false
@@ -26,7 +25,7 @@ fn solve(n: usize, a: Vec<usize>, m: Vec<usize>, k: usize) -> bool {
   dp[0] = true;
   for i in 0..n {
     for j in 0..=k {
-      if j - a[i] > 0 && j/a[i] <= m[i] {
+      if j/a[i] > 0 && j/a[i] <= m[i] {
         dp[j] = dp[j - a[i]] || dp[j]
       }
     }
