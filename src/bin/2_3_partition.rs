@@ -24,7 +24,7 @@ fn solve(n: usize, m: usize, d: usize) -> usize {
   for i in 1..=m {
     for j in 0..=n {
       dp[i][j] = if j >= i {
-        dp[i][j - i] + dp[i - 1][j] % d
+        (dp[i][j - i] + dp[i - 1][j]) % d
       } else {
         dp[i - 1][j]
       };
