@@ -1,5 +1,8 @@
 use proconio::{fastout, input};
 
+// deprecated: supersliceを使うべき
+// https://docs.rs/superslice/1.0.0/superslice/trait.Ext.html
+
 #[fastout]
 fn main() {
     input! {
