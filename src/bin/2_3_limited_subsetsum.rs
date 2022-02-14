@@ -7,7 +7,7 @@ fn main() {
     m: [usize; n],
     k: usize,
   }
-  println!("{}", if solve(n, a, m, k) { "Yes" } else { "no" });
+  println!("{}", if solve(n, a, m, k) { "Yes" } else { "No" });
 }
 
 // 構成可能かどうかの真理値 f(n, k)

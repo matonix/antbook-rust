@@ -7,7 +7,7 @@ fn main() {
       a: [usize; n],
       k: usize
   }
-  println!("{}", if solve(n, &a, k) { "Yes" } else { "no" });
+  println!("{}", if solve(n, &a, k) { "Yes" } else { "No" });
 }
 
 fn solve(n: usize, a: &[usize], k: usize) -> bool {
