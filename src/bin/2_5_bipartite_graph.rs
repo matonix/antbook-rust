@@ -13,6 +13,7 @@ fn main() {
 
 // 適当な点からDFSしながら着色して矛盾なく辿れれればYes、そうでなければNo
 // https://docs.rs/petgraph/0.5.1/petgraph/graph/struct.WalkNeighbors.html
+// グラフは連結を想定
 
 fn solve(n: usize, _e: usize, es: Vec<(u32, u32)>) -> bool {
   let gr = Graph::<usize, u32>::from_edges(es);
