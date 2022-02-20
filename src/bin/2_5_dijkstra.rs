@@ -57,7 +57,6 @@ where
 
 // 蟻本の実装…とみせかけてほぼpetgraph実装
 // 辺のコスト周りはnum-traitを使っていった方が良いと思う
-// TODO: INFを用いた実装
 pub fn dijkstra<G, F, K>(
   graph: G,
   start: G::NodeId,
@@ -71,7 +70,7 @@ where
   K: Measure + Copy,
 {
   let mut visited = graph.visit_map();
-  let mut scores = HashMap::new(); // INF を使わない実装方法
+  let mut scores = HashMap::new();
   let mut predecessor = HashMap::new();
   let mut visit_next = BinaryHeap::new();
   let zero_score = K::default();
