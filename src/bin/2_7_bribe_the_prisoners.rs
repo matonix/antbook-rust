@@ -12,6 +12,7 @@ fn main() {
 }
 
 // 貪欲法 O(q log q): より中心に近いものを先に選ぶことでその後の計算が悪化することはない
+// 想定解よりだいぶ早いっぽいけど、あってる？？
 fn solve(p: usize, _q: usize, a: Vec<usize>) -> usize {
   let mut emptiness = vec![0, p + 1];
   let mut cost = 0;
