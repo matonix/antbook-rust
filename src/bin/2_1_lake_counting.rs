@@ -1,8 +1,6 @@
 use proconio::marker::Chars;
 use proconio::{fastout, input};
 
-// TODO: 4, 8 方向に usize で探索できるデータ構造
-
 #[fastout]
 fn main() {
   input! {
