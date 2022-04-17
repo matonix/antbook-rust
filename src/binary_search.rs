@@ -17,37 +17,40 @@ pub trait BinarySearch<T> {
     fn upper_bound(&self, x: &T) -> usize;
 }
 
+// めぐる式
+// https://qiita.com/SakiKuroe/items/37246516767a692f1e4e#%E4%BA%8C%E5%88%86%E6%8E%A2%E7%B4%A2-binary-search-lower-bound-upper-bound
+
 impl<T: Ord> BinarySearch<T> for [T] {
     // x 以上の要素のうち最初の要素の添字を返す。
     // xs には昇順ソート済みを想定する。
     fn lower_bound(&self, x: &T) -> usize {
-        let mut left = 0;
-        let mut right = self.len();
-        while left != right {
-            let mid = (left + right) / 2;
-            if &self[mid] < x {
-                left = mid + 1;
+        let mut ng = -1 as isize;
+        let mut ok = self.len() as isize;
+        while ok - ng > 1 {
+            let mid = (ok + ng) / 2;
+            if x <= &self[mid as usize] {
+                ok = mid;
             } else {
-                right = mid;
+                ng = mid;
             }
         }
-        left
+        ok as usize
     }
 
     // x より大きい要素のうち最初の要素の添字を返す。
     // xs には昇順ソート済みを想定する。
     fn upper_bound(&self, x: &T) -> usize {
-        let mut left = 0;
-        let mut right = self.len();
-        while left != right {
-            let mid = (left + right) / 2;
-            if &self[mid] <= x {
-                left = mid + 1;
+        let mut ng = -1 as isize;
+        let mut ok = self.len() as isize;
+        while ok - ng > 1 {
+            let mid = (ok + ng) / 2;
+            if x < &self[mid as usize] {
+                ok = mid;
             } else {
-                right = mid;
+                ng = mid;
             }
         }
-        left
+        ok as usize
     }
 }
 
