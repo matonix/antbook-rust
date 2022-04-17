@@ -11,9 +11,27 @@ fn main() {
   dbg!(solve(p, q, a));
 }
 
+// DP
+fn solve(p: usize, q: usize, a: Vec<usize>) -> usize {
+  let a = vec![vec![0], a ,vec![p+1]].concat();
+  let mut dp = vec![vec![usize::MAX; q+2]; q+1]; // 1-indexed
+  for i in 0..=q {
+    dp[i][i+1] = 0;
+  }
+
+  for d in 2..=q+1 { // delta
+    for i in 0..=q+1-d {
+      let j = i + d;
+      let child = (i+1..=j-1).map(|k| dp[i][k] + dp[k][j]).min().unwrap();
+      dp[i][j] = child + a[j] - a[i] - 2;
+    }
+  }
+  dp[0][q+1]
+}
+
 // 貪欲法 O(q log q): より中心に近いものを先に選ぶことでその後の計算が悪化することはない
-// 想定解よりだいぶ早いっぽいけど、あってる？？
-// TODO: バグってる（無限ループ）
+// 想定解よりだいぶ早いっぽいけど、あってる？？→どっかおかしいと思う
+// バグってる（無限ループ）
 fn _solve(p: usize, _q: usize, a: Vec<usize>) -> usize {
   let mut emptiness = vec![0, p + 1];
   let mut cost = 0;
@@ -43,7 +61,7 @@ fn _solve(p: usize, _q: usize, a: Vec<usize>) -> usize {
 }
 
 // 全探索 O(q! q log q)
-fn solve(p: usize, q: usize, a: Vec<usize>) -> usize {
+fn __solve(p: usize, q: usize, a: Vec<usize>) -> usize {
   let mut ans = usize::MAX;
   for a in a.into_iter().permutations(q) {
     let mut emptiness = vec![0, p + 1];
