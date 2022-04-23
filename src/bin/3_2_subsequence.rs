@@ -1,5 +1,4 @@
 use proconio::input;
-use antbook::binary_search::BinarySearch;
 
 fn main() {
   input! {
@@ -12,7 +11,7 @@ fn main() {
 
 // 連続する部分列(contiguous subsequence)全体を調べるのは O(n^2): 始点 s と終点 t [s, t) の組み合わせ
 // 連続する部分列に対する評価関数が、隣接要素の追加と削除をサポートできるならば、しゃくとり法が適用可能 O(n)
-// ※ ある連続する部分列を S としたとき、 append(S, e) と remove(e, S) をサポートするという感じ（今回は単純な加減算）
+// ※ ある連続する部分列を S としたとき、 insert(S, e) と remove(e, S) をサポートするという感じ（今回は単純な加減算）
 // 2_3_multicombination.rs (p.67 重複組み合わせ)の式変形とかは実質しゃくとり法な気がする…。
 fn solve(n: usize, sum: usize, a: Vec<usize>) -> usize {
   let mut s = 0;
