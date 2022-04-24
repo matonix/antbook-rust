@@ -7,6 +7,7 @@ name = "antbook"
 version = "0.1.0"
 dependencies = [
  "assert_approx_eq",
+ "bitset-fixed",
  "itertools",
  "itertools-num",
  "maplit",
@@ -28,6 +29,12 @@ name = "autocfg"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
+
+[[package]]
+name = "bitset-fixed"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a8cc868e96ba5c32ffae4d42bf2940ca7fca317dcef3f19b6d7de66b6885abff"
 
 [[package]]
 name = "either"
