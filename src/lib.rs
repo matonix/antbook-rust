@@ -8,3 +8,7 @@ pub mod modulo;
 pub use modulo::*;
 
 pub mod heap;
+pub use heap::*;
+
+pub mod segtree;
+pub use segtree::*;
