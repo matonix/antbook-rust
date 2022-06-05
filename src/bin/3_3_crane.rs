@@ -23,8 +23,7 @@ fn solve(_n: usize, _c: usize, l: Vec<usize>, s: Vec<usize>, a: Vec<usize>) -> V
   let a = a.iter().map(|&deg| deg as f64 / 180.0 * PI - PI).collect_vec(); // 前のベクトルからどれだけ回転するか（前のベクトルと同じならゼロ）
   let mut ans = vec![];
   fn query(st: &mut SegTree<Node>, s: usize, a: f64) -> (f64, f64) {
-    let n = st.query(s, s + 1); // 更新対象
-    st.update(s, Node::new(a, Complex::from_polar(1.0, a) * n.z));
+    st.update_by(s, |n| Node::new(a, Complex::from_polar(1.0, a) * n.z));
     let n = st.query(0, st.size());
     (n.z.re, n.z.im)
   }

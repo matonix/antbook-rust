@@ -125,6 +125,20 @@ where
     }
   }
 
+  pub fn update_by<F>(&mut self, i: usize, mut f: F)
+  where
+    F: FnMut(&T) -> T,
+  {
+    // 葉の接点
+    let mut k = i + (self.0.len() + 1) / 2 - 1;
+    self.0[k] = f(&self.0[k]);
+    // 登りながら更新
+    while k > 0 {
+      k = (k - 1) / 2;
+      self.0[k] = T::op(self.0[k * 2 + 1].clone(), self.0[k * 2 + 2].clone());
+    }
+  }
+
   pub fn size(&self) -> usize {
     self.1
   }
