@@ -169,6 +169,13 @@ mod tests {
     assert_eq!(st.query(0, 5).0, 2);
   }
   #[test]
+  fn sample_range_update_query() {
+    let v = vec![5, 3, 7, 9, 6, 4, 1, 2];
+    let mut st = Min::<usize>::rmq(v);
+    st.update(0, 4, Min(10));
+    assert_eq!(st.query(0, 5).0, 6);
+  }
+  #[test]
   fn sample_query_odd() {
     let v = vec![5, 3, 7, 9, 6, 4, 1];
     let mut st = Min::<usize>::rmq(v);
