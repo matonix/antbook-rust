@@ -42,7 +42,7 @@ pub struct Node {
 }
 
 impl Monoid for Node {
-  fn op(a: Self, b: Self) -> Self {
+  fn op(a: &Self, b: &Self) -> Self {
     Self {
       theta: a.theta + b.theta,
       z: a.z + Complex::from_polar(1.0, a.theta) * b.z,

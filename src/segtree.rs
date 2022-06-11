@@ -8,7 +8,7 @@ use std::cmp::min;
 
 // 一般にはモノイド （op, e) 上の構造を持つ
 pub trait Monoid {
-  fn op(a: Self, b: Self) -> Self;
+  fn op(a: &Self, b: &Self) -> Self;
   fn e() -> Self;
 }
 
@@ -17,10 +17,10 @@ pub struct SegTree<T>(Vec<T>, usize);
 
 impl<T> Monoid for T
 where
-  T: Zero,
+  T: Zero + Clone,
 {
-  fn op(a: Self, b: Self) -> Self {
-    a.add(b)
+  fn op(a: &Self, b: &Self) -> Self {
+    a.clone() + b.clone()
   }
   fn e() -> Self {
     T::zero()
@@ -34,8 +34,8 @@ impl<T> Monoid for Min<T>
 where
   T: Ord + Bounded + Clone,
 {
-  fn op(a: Self, b: Self) -> Self {
-    Self(min(a.0, b.0))
+  fn op(a: &Self, b: &Self) -> Self {
+    Self(min(a.0.clone(), b.0.clone()))
   }
   fn e() -> Self {
     Self(T::max_value())
@@ -67,7 +67,7 @@ where
         acc.push(vec.clone());
         let mut new_vec = vec![];
         for (l, r) in vec.iter().tuples() {
-          new_vec.push(T::op(l.clone(), r.clone()));
+          new_vec.push(T::op(l, r));
         }
         if vec.len() % 2 != 0 {
           if let Some(last) = vec.last() {
@@ -108,21 +108,14 @@ where
       } else {
         let vl = go(st, s, t, k * 2 + 1, l, (l + r) / 2);
         let vr = go(st, s, t, k * 2 + 2, (l + r) / 2, r);
-        T::op(vl, vr)
+        T::op(&vl, &vr)
       }
     }
     go(&self, s, t, 0, 0, (self.0.len() + 1) / 2)
   }
 
   pub fn update(&mut self, i: usize, x: T) {
-    // 葉の接点
-    let mut k = i + (self.0.len() + 1) / 2 - 1;
-    self.0[k] = x;
-    // 登りながら更新
-    while k > 0 {
-      k = (k - 1) / 2;
-      self.0[k] = T::op(self.0[k * 2 + 1].clone(), self.0[k * 2 + 2].clone());
-    }
+    self.update_by(i, |_| x.clone())
   }
 
   pub fn update_by<F>(&mut self, i: usize, mut f: F)
@@ -135,7 +128,7 @@ where
     // 登りながら更新
     while k > 0 {
       k = (k - 1) / 2;
-      self.0[k] = T::op(self.0[k * 2 + 1].clone(), self.0[k * 2 + 2].clone());
+      self.0[k] = T::op(&self.0[k * 2 + 1], &self.0[k * 2 + 2]);
     }
   }
 

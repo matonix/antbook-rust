@@ -1,6 +1,6 @@
 // use antbook::binary_indexed_tree::BIT;
-use antbook::segtree::{Monoid, SegTree};
 use proconio::input;
+use itertools::Itertools;
 
 // 参考: http://hos.ac/slides/20140319_bit.pdf p.57~
 // http://poj.org/problem?id=3468
@@ -42,32 +42,6 @@ fn solve(n: usize, q: usize, a: Vec<usize>, qs: Vec<Input>) -> Vec<usize> {
   // let mut bit = BIT::new(n);
 
   ans
-}
-
-// a. その節点の区間全体に一様に加えられた値
-// b. その節点の区間に一様でなく加えられた値の和
-#[derive(Debug, Clone, PartialEq)]
-pub struct Node {
-  a: usize,
-  b: usize,
-}
-
-impl Monoid for Node {
-  fn op(x: Self, y: Self) -> Self {
-    Self {
-      a: x.a + y.a,
-      b: x.b + y.b,
-    }
-  }
-  fn e() -> Self {
-    Self { a: 0, b: 0 }
-  }
-}
-
-impl Node {
-  fn new(a: usize, b: usize) -> Self {
-    Self { a, b }
-  }
 }
 
 #[cfg(test)]
