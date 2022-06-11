@@ -13,5 +13,8 @@ pub use heap::*;
 pub mod segtree;
 pub use segtree::*;
 
+pub mod lazy_segtree;
+pub use lazy_segtree::*;
+
 pub mod binary_indexed_tree;
 pub use binary_indexed_tree::*;
