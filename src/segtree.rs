@@ -19,43 +19,23 @@ impl<X> SegTree<X>
 where
   X: Clone + Monoid,
 {
-  pub fn new(vec: Vec<X>) -> Self {
-    fn go<X>(vec: Vec<X>, acc: &mut Vec<Vec<X>>)
-    where
-      X: Clone + Monoid,
-    {
-      if vec.len() <= 1 {
-        acc.push(vec);
-      } else {
-        acc.push(vec.clone());
-        let mut new_vec = vec![];
-        for (l, r) in vec.iter().tuples() {
-          new_vec.push(X::op(l, r));
-        }
-        if vec.len() % 2 != 0 {
-          if let Some(last) = vec.last() {
-            new_vec.push(last.clone());
-          }
-        }
-        go(new_vec, acc);
-      }
-    }
-    // padding to 2^n
-    let len = vec.len();
+  pub fn new(v: Vec<X>) -> Self {
+    let len = v.len();
+    // n == x^2 かつ x は len < x^2 を満たす最小の x
     let mut n = 1;
     while len > n {
       n = n << 1;
     }
-    let pad = n - len;
-    let vec = vec![vec, vec![X::e(); pad]].concat();
-    let mut acc = vec![];
-    go(vec, &mut acc);
-    acc.reverse();
-    SegTree(acc.concat(), len)
+    // 2冪にする
+    let mut vec = vec![vec![X::e(); n - 1], v, vec![X::e(); n - len]].concat();
+    for k in (0..=len - 2).rev() {
+      vec[k] = X::op(&vec[k * 2 + 1], &vec[k * 2 + 2]);
+    }
+    SegTree(vec, len)
   }
 
   // [s, t) の最小値を求める
-  // 見つからない場合は MaxBound を返す
+  // 見つからない場合は X::e() を返す
   pub fn query(&self, s: usize, t: usize) -> X {
     // k は接点の番号であり、 [l, r) に対応する
     fn go<X>(st: &SegTree<X>, s: usize, t: usize, k: usize, l: usize, r: usize) -> X
