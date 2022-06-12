@@ -42,6 +42,7 @@ pub struct Node {
 }
 
 impl Monoid for Node {
+  type X = Node;
   fn op(a: &Self, b: &Self) -> Self {
     Self {
       theta: a.theta + b.theta,
