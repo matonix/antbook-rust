@@ -33,7 +33,7 @@ where
 
   pub fn sum(&self, i: usize) -> T {
     if i == 0 {
-      panic!("i should be >= 1.");
+      return T::zero();
     }
     let mut s = T::zero();
     let mut i = i as isize;
