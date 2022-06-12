@@ -102,10 +102,10 @@ where
 
 // 具体的なモノイド作用付きモノイド
 
-// Range Minmum Query
+// Range Minimum Query + Range Update Query
 #[derive(Debug)]
-pub struct RMQ<T>(T);
-impl<T> RightActMonoid for RMQ<T>
+pub struct RMQRUQ<T>(T);
+impl<T> RightActMonoid for RMQRUQ<T>
 where
   T: Ord + PartialEq + Bounded + Clone,
 {
@@ -143,33 +143,33 @@ mod tests {
   #[test]
   fn sample_query() {
     let v = vec![5, 3, 7, 9, 6, 4, 1, 2];
-    let mut st = LazySegTree::<RMQ<usize>>::new(v);
+    let mut st = LazySegTree::<RMQRUQ<usize>>::new(v);
     assert_eq!(st.query(0, 7), 1);
   }
   #[test]
   fn sample_update_query() {
     let v = vec![5, 3, 7, 9, 6, 4, 1, 2];
-    let mut st = LazySegTree::<RMQ<usize>>::new(v);
+    let mut st = LazySegTree::<RMQRUQ<usize>>::new(v);
     st.update(0, 1, 2);
     assert_eq!(st.query(0, 5), 2);
   }
   #[test]
   fn sample_range_update_query() {
     let v = vec![5, 3, 7, 9, 6, 4, 1, 2];
-    let mut st = LazySegTree::<RMQ<usize>>::new(v);
+    let mut st = LazySegTree::<RMQRUQ<usize>>::new(v);
     st.update(0, 4, 10);
     assert_eq!(st.query(0, 5), 6);
   }
   #[test]
   fn sample_query_odd() {
     let v = vec![5, 3, 7, 9, 6, 4, 1];
-    let mut st = LazySegTree::<RMQ<usize>>::new(v);
+    let mut st = LazySegTree::<RMQRUQ<usize>>::new(v);
     assert_eq!(st.query(0, 6), 3);
   }
   #[test]
   fn sample_update_query_odd() {
     let v = vec![5, 3, 7, 9, 6, 4, 1];
-    let mut st = LazySegTree::<RMQ<usize>>::new(v);
+    let mut st = LazySegTree::<RMQRUQ<usize>>::new(v);
     st.update(0, 1, 2);
     assert_eq!(st.query(0, 5), 2);
   }

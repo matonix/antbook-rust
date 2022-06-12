@@ -1,9 +1,9 @@
 // use antbook::binary_indexed_tree::BIT;
 use proconio::input;
-use antbook::{ProportionalLazySegTree, RSQ};
+use antbook::{ProportionalLazySegTree, RSQRAQ};
 
-// 参考: http://hos.ac/slides/20140319_bit.pdf p.57~
-// http://poj.org/problem?id=3468
+// 参考(SegTree): https://algo-logic.info/segment-tree/#toc_id_6_5
+// 入力例: http://poj.org/problem?id=3468
 
 enum Input {
   C(usize, usize, usize), // l, r, x
@@ -36,10 +36,23 @@ fn main() {
   println!("{:?}", solve(n, q, a, qs_));
 }
 
-// use segtree
+// use bit
 fn solve(_n: usize, _q: usize, a: Vec<usize>, qs: Vec<Input>) -> Vec<usize> {
   let mut ans = vec![];
-  let mut st = ProportionalLazySegTree::<RSQ<usize>>::new(a);
+  let mut st = ProportionalLazySegTree::<RSQRAQ<usize>>::new(a);
+  for q in qs {
+    match q {
+      Input::C(l, r, x) => st.update(l - 1, r, x),
+      Input::Q(l, r) => ans.push(st.query(l - 1, r)), 
+    }
+  }
+  ans
+}
+
+// use segtree
+fn _solve(_n: usize, _q: usize, a: Vec<usize>, qs: Vec<Input>) -> Vec<usize> {
+  let mut ans = vec![];
+  let mut st = ProportionalLazySegTree::<RSQRAQ<usize>>::new(a); // 0-indexed
   for q in qs {
     match q {
       Input::C(l, r, x) => st.update(l - 1, r, x),

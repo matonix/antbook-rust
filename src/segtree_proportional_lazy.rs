@@ -104,10 +104,10 @@ where
 
 // 具体的な右可群右作用付きモノイド
 
-// Range Sum Query
+// Range Sum Query + Range Add Query
 #[derive(Debug)]
-pub struct RSQ<T>(T);
-impl<T> RightActModule for RSQ<T>
+pub struct RSQRAQ<T>(T);
+impl<T> RightActModule for RSQRAQ<T>
 where
   T: Zero + One + FromPrimitive + PartialEq + Clone, // Zero は Add 上に定義されている
 {

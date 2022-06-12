@@ -85,11 +85,11 @@ where
 
 // 具体的なモノイド
 
-// Range Add Query
+// Range Sum Query + Point Add Query
 // (T, +, 0)
 #[derive(Debug)]
-pub struct RAQ<T>(T);
-impl<T> Monoid for RAQ<T>
+pub struct RSQ<T>(T);
+impl<T> Monoid for RSQ<T>
 where
   T: Zero + Clone, // Zero は Add 上に定義されている
 {
@@ -102,7 +102,7 @@ where
   }
 }
 
-// Range Minimum Query
+// Range Minimum Query + Point Update Query
 // (M∪{∞}, min, ∞)
 #[derive(Debug)]
 pub struct RMQ<T>(T);
