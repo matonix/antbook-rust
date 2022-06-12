@@ -1,6 +1,6 @@
 // use antbook::binary_indexed_tree::BIT;
 use proconio::input;
-use antbook::proportional_lazy_segtree::{ProportionalLazySegTree, RAQ};
+use antbook::{ProportionalLazySegTree, RSQ};
 
 // 参考: http://hos.ac/slides/20140319_bit.pdf p.57~
 // http://poj.org/problem?id=3468
@@ -39,7 +39,7 @@ fn main() {
 // use segtree
 fn solve(_n: usize, _q: usize, a: Vec<usize>, qs: Vec<Input>) -> Vec<usize> {
   let mut ans = vec![];
-  let mut st = ProportionalLazySegTree::<RAQ<usize>>::new(a);
+  let mut st = ProportionalLazySegTree::<RSQ<usize>>::new(a);
   for q in qs {
     match q {
       Input::C(l, r, x) => st.update(l - 1, r, x),

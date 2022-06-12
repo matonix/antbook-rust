@@ -1,10 +1,10 @@
-use num::{Bounded, Zero};
+use num::{Zero, FromPrimitive, One};
 
-// Lazy Segment tree による区間更新
+// 区間に比例した作用素を持つ Lazy Segment tree (Range Sum Query 向け)
 // s, t が与えられたとき、 [s, t] の最小値を求める O(log n)
 // s, t, f が与えられたとき、 for each k in [s, t], a_k = f(k) O(log n)
 
-pub trait RightActMonoid {
+pub trait RightActModule {
   type X;
   type M;
   fn opx(a: &Self::X, b: &Self::X) -> Self::X;
@@ -12,17 +12,18 @@ pub trait RightActMonoid {
   fn opm(a: &Self::M, b: &Self::M) -> Self::M;
   fn em() -> Self::M;
   fn act(a: &Self::X, b: &Self::M) -> Self::X;
+  fn mult(a: &Self::M, b: usize) -> Self::M;
 }
 
 #[derive(Debug)]
-pub struct LazySegTree<T: RightActMonoid> {
+pub struct ProportionalLazySegTree<T: RightActModule> {
   nodes: Vec<T::X>, 
   lazys: Vec<T::M>, 
   n: usize, 
   leaves: usize
 }
 
-impl<T: RightActMonoid> LazySegTree<T>
+impl<T: RightActModule> ProportionalLazySegTree<T>
 where
   T::X: Clone,
   T::M: Clone + PartialEq,
@@ -40,7 +41,7 @@ where
       vec[k] = T::opx(&vec[k * 2 + 1], &vec[k * 2 + 2]);
     }
     let size = vec.len();
-    LazySegTree {
+    ProportionalLazySegTree {
       nodes: vec,
       lazys: vec![T::em(); size], 
       n, 
@@ -56,7 +57,7 @@ where
   }
 
   fn query_rec(&mut self, s: usize, t: usize, k: usize, l: usize, r: usize) -> T::X {
-    self.eval(k);
+    self.eval(k, r - l);
     if r <= s || t <= l { // [s, t), [l, r) に共通部分がない場合は終了
       T::ex()
     } else if s <= l && r <= t { // [s, t) が [l, r) を包摂する場合はノードの値を返す
@@ -73,10 +74,10 @@ where
   }
 
   fn update_rec(&mut self, s: usize, t: usize, x: T::M, k: usize, l: usize, r: usize) {
-    self.eval(k);
+    self.eval(k, r - l);
     if s <= l && r <= t { // [s, t) が [l, r) を包摂する場合
       self.lazys[k] = T::opm(&self.lazys[k], &x);
-      self.eval(k);
+      self.eval(k, r - l);
     } else if s < r && l < t { // [s, t), [l, r) に一部共通部分がある場合
       self.update_rec(s, t, x.clone(), k * 2 + 1, l, (l + r) / 2);
       self.update_rec(s, t, x, k * 2 + 2, (l + r) / 2, r);
@@ -84,14 +85,15 @@ where
     }
   }
 
-  fn eval(&mut self, k: usize) {
+  fn eval(&mut self, k: usize, len: usize) {
     if self.lazys[k] == T::em() {
       return
     } else if k < self.n - 1 {
       self.lazys[k * 2 + 1] = T::opm(&self.lazys[k * 2 + 1], &self.lazys[k]);
       self.lazys[k * 2 + 2] = T::opm(&self.lazys[k * 2 + 2], &self.lazys[k]);
     }
-    self.nodes[k] = T::act(&self.nodes[k], &self.lazys[k]);
+    // M 上のスカラー乗法を用いた高速化
+    self.nodes[k] = T::act(&self.nodes[k], &T::mult(&self.lazys[k], len));
     self.lazys[k] = T::em();
   }
 
@@ -100,49 +102,14 @@ where
   }
 }
 
-// 具体的なモノイド作用付きモノイド
+// 具体的な右可群右作用付きモノイド
 
-// Range Minmum Query
+// Range Sum Query
 #[derive(Debug)]
-pub struct RMQ<T>(T);
-impl<T> RightActMonoid for RMQ<T>
+pub struct RSQ<T>(T);
+impl<T> RightActModule for RSQ<T>
 where
-  T: Ord + PartialEq + Bounded + Clone,
-{
-  type X = T;
-  type M = T;
-  fn opx(a: &Self::X, b: &Self::X) -> Self::X {
-    a.min(b).clone()
-  }
-  fn ex() -> Self::X {
-    T::max_value()
-  }
-  fn opm(a: &Self::M, b: &Self::M) -> Self::M {
-    if T::max_value().eq(b) {
-      a.clone()
-    } else {
-      b.clone()
-    }
-  }
-  fn em() -> Self::M {
-    T::max_value()
-  }
-  fn act(a: &Self::X, b: &Self::M) -> Self::X {
-    if T::max_value().eq(b) {
-      a.clone()
-    } else {
-      b.clone()
-    }
-  }
-}
-
-
-// Range Add Query
-#[derive(Debug)]
-pub struct RAQ<T>(T);
-impl<T> RightActMonoid for RAQ<T>
-where
-  T: Zero + PartialEq + Clone, // Zero は Add 上に定義されている
+  T: Zero + One + FromPrimitive + PartialEq + Clone, // Zero は Add 上に定義されている
 {
   type X = T;
   type M = T;
@@ -161,43 +128,7 @@ where
   fn act(a: &Self::X, b: &Self::M) -> Self::X {
     a.clone() + b.clone()
   }
-}
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  #[test]
-  fn sample_query() {
-    let v = vec![5, 3, 7, 9, 6, 4, 1, 2];
-    let mut st = LazySegTree::<RMQ<usize>>::new(v);
-    assert_eq!(st.query(0, 7), 1);
-  }
-  #[test]
-  fn sample_update_query() {
-    let v = vec![5, 3, 7, 9, 6, 4, 1, 2];
-    let mut st = LazySegTree::<RMQ<usize>>::new(v);
-    st.update(0, 1, 2);
-    assert_eq!(st.query(0, 5), 2);
-  }
-  #[test]
-  fn sample_range_update_query() {
-    let v = vec![5, 3, 7, 9, 6, 4, 1, 2];
-    let mut st = LazySegTree::<RMQ<usize>>::new(v);
-    st.update(0, 4, 10);
-    assert_eq!(st.query(0, 5), 6);
-  }
-  #[test]
-  fn sample_query_odd() {
-    let v = vec![5, 3, 7, 9, 6, 4, 1];
-    let mut st = LazySegTree::<RMQ<usize>>::new(v);
-    assert_eq!(st.query(0, 6), 3);
-  }
-  #[test]
-  fn sample_update_query_odd() {
-    let v = vec![5, 3, 7, 9, 6, 4, 1];
-    let mut st = LazySegTree::<RMQ<usize>>::new(v);
-    st.update(0, 1, 2);
-    assert_eq!(st.query(0, 5), 2);
+  fn mult(a: &Self::M, b: usize) -> Self::M {
+    a.clone() * T::from_usize(b).unwrap()
   }
 }
