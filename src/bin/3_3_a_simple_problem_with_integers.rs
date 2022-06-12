@@ -4,6 +4,9 @@ use antbook::{ProportionalLazySegTree, RSQRAQ};
 
 // 参考(SegTree): https://algo-logic.info/segment-tree/#toc_id_6_5
 // 入力例: http://poj.org/problem?id=3468
+// 可視化: https://www.desmos.com/calculator/lnmk40eo1o
+// bit0の役割: 範囲更新のレンジ外における累積和の算出
+// bit1の枠割: 範囲更新のレンジ内における累積和の算出（インデックスが掛けられるので増加列になる）
 
 enum Input {
   C(usize, usize, isize), // l, r, x
