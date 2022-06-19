@@ -19,6 +19,7 @@ fn solve(a: usize, b: usize) -> usize {
 }
 
 // 区間素数列挙 O(n log log n)
+#[allow(unstable_name_collisions)]
 fn segment_sieve(a: usize, b: usize) -> Vec<bool> {
   let rb = integer::sqrt(b);
   let mut is_prime_small = vec![true; rb]; // [0, √b)
