@@ -1,20 +1,19 @@
-use petgraph::matrix_graph::{MatrixGraph, node_index};
 use proconio::input;
 
 fn main() {
   input! {
     n: usize,
     e: usize,
-    es: [(usize, usize, usize); e]
+    es: [(u16, u16, usize); e]
   }
   println!("{}", solve(n, es));
 }
 
-fn solve(n: usize, es: Vec<(usize, usize, usize)>) -> usize {
-  let inf = usize::MAX / 2;
+fn _solve(n: usize, es: Vec<(u16, u16, usize)>) -> usize {
+  let inf = usize::MAX;
   let mut g = vec![vec![inf; n]; n];
   for (v, u, c) in es {
-    g[v][u] = c;
+    g[v as usize][u as usize] = c;
   }
 
   let mut dp = vec![vec![inf; n]; 1 << n];
@@ -24,7 +23,7 @@ fn solve(n: usize, es: Vec<(usize, usize, usize)>) -> usize {
     for v in 0..n {
       for u in 0..n {
         if (s >> u & 1) == 0 {
-          dp[s][v] = dp[s][v].min(dp[s | 1 << u][u] + g[v][u])
+          dp[s][v] = dp[s][v].min(dp[s | 1 << u][u].saturating_add(g[v][u]))
         }
       }
     }
@@ -32,11 +31,16 @@ fn solve(n: usize, es: Vec<(usize, usize, usize)>) -> usize {
   dp[0][0]
 }
 
-// メモ化再帰版（stack overflow する）
-fn _solve(n: usize, es: Vec<(u16, u16, usize)>) -> usize {
-  let g = MatrixGraph::<(), usize>::from_edges(&es);
+// メモ化再帰版
+fn solve(n: usize, es: Vec<(u16, u16, usize)>) -> usize {
+  let inf = usize::MAX;
+  let mut g = vec![vec![inf; n]; n];
+  for (v, u, c) in es {
+    g[v as usize][u as usize] = c;
+  }
   let mut dp = vec![vec![-1; n]; 1 << n];
-  fn rec(n: &usize, g: &MatrixGraph<(), usize>, dp: &mut Vec<Vec<isize>>, s: usize, v: usize) -> usize {
+  fn rec(n: &usize, g: &Vec<Vec<usize>>, dp: &mut Vec<Vec<isize>>, s: usize, v: usize) -> usize {
+    let inf = usize::MAX;
     if dp[s][v] >= 0 {
       return dp[s][v] as usize
     }
@@ -45,10 +49,10 @@ fn _solve(n: usize, es: Vec<(u16, u16, usize)>) -> usize {
       dp[s][v] = 0;
       return 0
     }
-    let mut res = usize::MAX;
+    let mut res = inf;
     for u in 0..*n {
-      if (s >> n & 1) == 0 {
-        res = res.min(rec(n, g, dp, s | 1 << u, u) + g[(node_index(v), node_index(u))])
+      if (s >> u & 1) == 0 {
+        res = res.min(rec(n, g, dp, s | 1 << u, u).saturating_add(g[v][u]))
       }
     }
     dp[s][v] = res as isize;
