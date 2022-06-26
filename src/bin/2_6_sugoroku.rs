@@ -1,5 +1,6 @@
 // use num::integer; // これで一発
 // https://docs.rs/num/0.4.0/num/integer/trait.Integer.html#method.extended_gcd
+// ↑バグっているので使わないほうがいい https://github.com/rust-num/num-integer/issues/40
 use proconio::input;
 use std::cmp::{max, min};
 
