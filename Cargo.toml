@@ -17,6 +17,7 @@ maplit = "=1.0.2"
 superslice = "=1.0.0"
 ordered-float = "=1.0.2"
 bitset-fixed = "=0.1.0"
+fixedbitset = "=0.2.0"
 
 # not included in atcoder rust resources
 assert_approx_eq = "1.1.0"
