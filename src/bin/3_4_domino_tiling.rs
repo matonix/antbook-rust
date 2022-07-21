@@ -74,7 +74,7 @@ impl _G {
     for (k, l) in [(0, 1), (1, 0)] {
       if i + k < n && j + l < m && !self.used[i + k][j + l] && !self.color[i + k][j + l] {
         self.used[i + k][j + l] = true;
-        res += self._go(i, j + 1); // 再帰から戻った時に探索で一時的に true にした盤面を false に戻す
+        res += self._go(i, j + 1); // 再帰から戻った時に探索で一時的に true にした盤面を false に戻す（バックトラック）
         self.used[i + k][j + l] = false;
       }
     }
