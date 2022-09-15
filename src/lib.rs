@@ -21,3 +21,6 @@ pub use segtree_proportional_lazy::*;
 
 pub mod binary_indexed_tree;
 pub use binary_indexed_tree::*;
+
+pub mod maximum_flow;
+pub use maximum_flow::*;

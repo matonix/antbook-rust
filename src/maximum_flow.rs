@@ -5,27 +5,7 @@ use std::{
   fmt::Debug,
 };
 
-fn main() {
-  let mut graph = Graph::new();
-  let s = graph.add_node(());
-  let n1 = graph.add_node(());
-  let n2 = graph.add_node(());
-  let n3 = graph.add_node(());
-  let t = graph.add_node(());
-  graph.extend_with_edges(&[
-    (s, n1, 10),
-    (s, n2, 2),
-    (n1, n2, 6),
-    (n1, n3, 6),
-    (n3, n2, 3),
-    (n2, t, 5),
-    (n3, t, 8),
-  ]);
-  dbg!(&ford_fulkerson(s, t, &graph));
-  dbg!(&dinic(s, t, &graph));
-}
-
-fn ford_fulkerson<E>(s: NodeIndex, t: NodeIndex, graph: &DiGraph<(), E>) -> E
+pub fn ford_fulkerson<E>(s: NodeIndex, t: NodeIndex, graph: &DiGraph<(), E>) -> E
 where
   E: Copy + NumAssign + Bounded + Ord + Debug,
 {
@@ -83,7 +63,7 @@ where
   }
 }
 
-fn dinic<E>(s: NodeIndex, t: NodeIndex, graph: &DiGraph<(), E>) -> E
+pub fn dinic<E>(s: NodeIndex, t: NodeIndex, graph: &DiGraph<(), E>) -> E
 where
   E: Copy + NumAssign + Bounded + Ord + Debug,
 {
@@ -167,5 +147,28 @@ where
     while let Some(f) = dfs(&level, &mut cap, &g, s, t, E::max_value()) {
       flow += f;
     }
+  }
+}
+
+mod tests {
+  #[test]
+  fn test() {
+    let mut graph = petgraph::Graph::new();
+    let s = graph.add_node(());
+    let n1 = graph.add_node(());
+    let n2 = graph.add_node(());
+    let n3 = graph.add_node(());
+    let t = graph.add_node(());
+    graph.extend_with_edges(&[
+      (s, n1, 10),
+      (s, n2, 2),
+      (n1, n2, 6),
+      (n1, n3, 6),
+      (n3, n2, 3),
+      (n2, t, 5),
+      (n3, t, 8),
+    ]);
+    assert_eq!(super::ford_fulkerson(s, t, &graph), 11);
+    assert_eq!(super::dinic(s, t, &graph), 11);
   }
 }
