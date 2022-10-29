@@ -75,8 +75,6 @@ where
     cap.insert((e.target(), e.source()), E::zero());
   }
 
-  // let mut iter = HashMap::new();
-
   // s から各ノードへの最短距離の計算
   fn bfs<E>(
     cap: &HashMap<(NodeIndex, NodeIndex), E>,
