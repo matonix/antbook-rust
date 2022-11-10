@@ -30,3 +30,6 @@ pub use minimum_cost_flow::*;
 
 pub mod shortest_path;
 pub use shortest_path::*;
+
+pub mod dot_log;
+pub use dot_log::*;
