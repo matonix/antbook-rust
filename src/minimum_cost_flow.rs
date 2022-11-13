@@ -1,7 +1,7 @@
-use crate::{shortest_path::bellman_ford, dijkstra, dijkstra_with_potential, dot_log};
+use crate::{shortest_path::bellman_ford, dijkstra_with_potential, dot_log};
 use num::{traits::{NumAssign, WrappingAdd}, Bounded};
 use petgraph::prelude::*;
-use std::collections::HashMap;
+use std::{collections::HashMap, iter::Sum};
 use std::fmt::Debug;
 
 // paper: https://arxiv.org/pdf/1207.6381.pdf
@@ -70,15 +70,8 @@ where
 // successive shortest path with dijkstra                       cap cost
 pub fn ssp_di<W>(s: NodeIndex, t: NodeIndex, graph: &DiGraph<(), (W, W)>, flow_obj: W) -> Option<W>
 where
-  W: Copy + NumAssign + Bounded + Ord + Debug + WrappingAdd,
+  W: Copy + NumAssign + Bounded + Ord + Debug + WrappingAdd + Sum,
 {
-  // // 初期ポテンシャル w/ dijkstra
-  // let g = graph.filter_map(
-  //   |_, n| Some(n),
-  //   |_, e| if e.0.is_zero() { None } else { Some(e.1) },
-  // ); // 探索用コストグラフ
-  // let potentials = dijkstra(&g, s).0;
-
   // 初期残余グラフ
   let mut res = graph.map(|_, _| W::zero(), |_, e| *e);
   let mut revs = HashMap::new();
@@ -91,13 +84,11 @@ where
     revs.insert(e.id(), rev_e);
     revs.insert(rev_e, e.id());
   }
-
   dot_log::log(&res, 0);
 
   let mut cost = W::zero();
   let mut flow_tot = W::zero();
   while flow_tot < flow_obj {
-    dot_log::log(&res, 1);
     // dijkstra で残余グラフ上の s-t 最短路を求める
     let g = res.filter_map(
       |_, n| Some(*n),
@@ -108,6 +99,7 @@ where
     for (i, w) in res.node_weights_mut().enumerate() {
       *w = paths.0[i]
     }
+    dot_log::log(&res, 1);
     // s-t 最短路に沿って流量を決定
     let mut f = W::max_value();
     let mut curr = t;
@@ -129,16 +121,15 @@ where
     }
     f = f.min(flow_obj - flow_tot); // 流しすぎないように
     flow_tot += f;
-    cost += paths.0[t.index()] * f;
+    let path_w: W = path.iter().map(|&e| res.edge_weight(e).unwrap().1).sum();
+    cost += path_w * f;
     // 残余グラフを更新
     for e in path.into_iter() {
       res.edge_weight_mut(e).unwrap().0 -= f;
       res.edge_weight_mut(revs[&e]).unwrap().0 += f;
       dot_log::log(&res, 2);
     }
-    dot_log::log(&res, 1);
   }
-  dot_log::log(&res, 0);
   dot_log::write_dot();
   Some(cost)
 }
@@ -166,9 +157,9 @@ mod tests {
     assert_eq!(super::ssp_bf(s, t, &graph, 5), Some(39));
     assert_eq!(super::ssp_bf(s, t, &graph, 11), Some(102));
     assert_eq!(super::ssp_bf(s, t, &graph, 12), None);
-    // assert_eq!(super::ssp_di(s, t, &graph, 0), Some(0));
+    assert_eq!(super::ssp_di(s, t, &graph, 0), Some(0));
     assert_eq!(super::ssp_di(s, t, &graph, 5), Some(39));
-    // assert_eq!(super::ssp_di(s, t, &graph, 11), Some(102));
-    // assert_eq!(super::ssp_di(s, t, &graph, 12), None);
+    assert_eq!(super::ssp_di(s, t, &graph, 11), Some(102));
+    assert_eq!(super::ssp_di(s, t, &graph, 12), None);
   }
 }

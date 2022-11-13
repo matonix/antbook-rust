@@ -53,9 +53,11 @@ where
         continue;
       }
       let next_score = score + *edge.weight();
-      scores[ix(next)] = std::cmp::min(scores[ix(next)], next_score);
-      visit_next.push(MinScored(scores[ix(next)], next));
-      predecessor[ix(next)] = Some(node);
+      if scores[ix(next)] > next_score {
+        scores[ix(next)] = next_score;
+        visit_next.push(MinScored(next_score, next));
+        predecessor[ix(next)] = Some(node);
+      }
     }
     visited.visit(node);
   }
@@ -90,9 +92,11 @@ where
         continue;
       }
       let next_score = score + *edge.weight() + *node_weights.get(&node).unwrap() - *node_weights.get(&next).unwrap();
-      scores[ix(next)] = std::cmp::min(scores[ix(next)], next_score);
-      visit_next.push(MinScored(scores[ix(next)], next));
-      predecessor[ix(next)] = Some(node);
+      if scores[ix(next)] > next_score {
+        scores[ix(next)] = next_score;
+        visit_next.push(MinScored(next_score, next));
+        predecessor[ix(next)] = Some(node);
+      }
     }
     visited.visit(node);
   }

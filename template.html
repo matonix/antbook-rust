@@ -74,7 +74,8 @@ function genSliders(level) {
 }
 
 var graphviz = d3.select("#graph").graphviz()
-    .width(500)
+    .engine("neato")
+    .width(800)
     .height(500)
     .fit(true)
     .transition(function () {
