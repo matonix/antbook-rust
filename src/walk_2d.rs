@@ -1,5 +1,7 @@
 use std::ops::{Index, IndexMut};
 
+use itertools::Itertools;
+
 pub type Point = (usize, usize);
 
 #[derive(Debug)]
@@ -14,7 +16,7 @@ impl<T> Walk2D<T> {
     Walk2D { n, m, arr }
   }
 
-  pub fn find<P>(&mut self, predicate: P) -> Option<Point>
+  pub fn find<P>(&self, predicate: P) -> Option<Point>
   where
     P: FnMut(&T) -> bool,
     T: Clone,
@@ -24,7 +26,21 @@ impl<T> Walk2D<T> {
       .concat()
       .iter()
       .position(predicate)
-      .map(|idx| (idx / self.n, idx % self.n))
+      .map(|idx| (idx / self.m, idx % self.m))
+  }
+
+  pub fn find_all<P>(&self, predicate: P) -> Vec<Point>
+  where
+    P: FnMut(&T) -> bool,
+    T: Clone,
+  {
+    self
+      .arr
+      .concat()
+      .iter()
+      .positions(predicate)
+      .map(|idx| (idx / self.m, idx % self.m))
+      .collect_vec()
   }
 
   pub fn next_4way_p(&self, (i, j): Point) -> Vec<Point> {

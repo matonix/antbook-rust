@@ -1,8 +1,7 @@
-use std::collections::HashMap;
-
 use antbook::maximum_flow::dinic;
 use fixedbitset::FixedBitSet;
 use petgraph::{prelude::*, visit::*};
+use std::collections::HashMap;
 
 fn main() {
   let mut graph = Graph::new();
@@ -39,19 +38,33 @@ fn another() {
   let v1 = graph.add_node(());
   let v2 = graph.add_node(());
   let v3 = graph.add_node(());
-  graph.extend_with_edges(&[
-    (u1, v1),
-    (u1, v2),
-    (u2, v1),
-    (u2, v3),
-    (u3, v2),
-  ]);
+  graph.extend_with_edges(&[(u1, v1), (u1, v2), (u2, v1), (u2, v3), (u3, v2)]);
   dbg!(&hopcroft_karp(&graph));
 }
 
 // p.197の容量1二部グラフのアルゴリズム
 // https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm
 fn hopcroft_karp(g: &UnGraph<(), ()>) -> usize {
+  fn dfs(
+    v: NodeIndex,
+    g: &UnGraph<(), ()>,
+    visit_map: &mut FixedBitSet,
+    matching: &mut HashMap<NodeIndex, NodeIndex>,
+  ) -> bool {
+    visit_map.visit(v);
+    for u in g.neighbors_undirected(v) {
+      if !matching.contains_key(&u)
+        || !visit_map.is_visited(matching.get(&u).unwrap())
+          && dfs(*matching.get(&u).unwrap(), g, visit_map, matching)
+      {
+        matching.insert(v, u);
+        matching.insert(u, v);
+        return true;
+      }
+    }
+    false
+  }
+
   let mut res = 0;
   let mut matching: HashMap<NodeIndex, NodeIndex> = HashMap::new();
   for (v, _) in g.node_references() {
@@ -63,16 +76,4 @@ fn hopcroft_karp(g: &UnGraph<(), ()>) -> usize {
     }
   }
   res
-}
-
-fn dfs(v: NodeIndex, g: &UnGraph<(), ()>, visit_map: &mut FixedBitSet, matching: &mut HashMap<NodeIndex, NodeIndex>) -> bool {
-  visit_map.visit(v);
-  for u in g.neighbors_undirected(v) {
-    if !matching.contains_key(&u) || !visit_map.is_visited(matching.get(&u).unwrap()) && dfs(*matching.get(&u).unwrap(), g, visit_map, matching) {
-      matching.insert(v, u);
-      matching.insert(u, v);
-      return true;
-    }
-  }
-  false
 }
