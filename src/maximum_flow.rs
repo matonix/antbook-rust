@@ -1,7 +1,8 @@
+use fixedbitset::FixedBitSet;
 use num::{traits::NumAssign, Bounded, Zero};
-use petgraph::prelude::*;
+use petgraph::{prelude::*, visit::{Visitable, VisitMap}};
 use std::{
-  collections::{HashMap, HashSet, VecDeque},
+  collections::{HashMap, VecDeque},
   fmt::Debug,
 };
 
@@ -9,16 +10,19 @@ pub fn ford_fulkerson<E>(s: NodeIndex, t: NodeIndex, graph: &DiGraph<(), E>) -> 
 where
   E: Copy + NumAssign + Bounded + Ord + Debug,
 {
-  // グラフそのものをイミュータブル、辺の重みをミュータブルにするため、構造を分離
   let g = UnGraph::from_edges(graph.edge_references().map(|e| (e.source(), e.target())));
   let mut cap = HashMap::new();
   for e in graph.edge_references() {
-    cap.insert((e.source(), e.target()), *e.weight());
-    cap.insert((e.target(), e.source()), E::zero());
+    if !cap.contains_key(&(e.source(), e.target())) {
+      cap.insert((e.source(), e.target()), *e.weight());
+    }
+    if !cap.contains_key(&(e.target(), e.source())) {
+      cap.insert((e.target(), e.source()), E::zero());
+    }
   }
 
   fn dfs<E>(
-    used: &mut HashSet<NodeIndex>,
+    visit_map: &mut FixedBitSet,
     cap: &mut HashMap<(NodeIndex, NodeIndex), E>,
     g: &UnGraph<(), ()>,
     v: NodeIndex,
@@ -31,12 +35,12 @@ where
     if v == t {
       return f;
     }
-    used.insert(v);
+    visit_map.visit(v);
     for e in g.edges(v) {
       let u = e.target();
       if let Some(w) = cap.get(&(v, u)) {
-        if !used.contains(&u) && *w > E::zero() {
-          let d = dfs(used, cap, g, u, t, f.min(*w));
+        if !visit_map.is_visited(&u) && *w > E::zero() {
+          let d = dfs(visit_map, cap, g, u, t, f.min(*w));
           if d > E::zero() {
             if let Some(w_mut) = cap.get_mut(&(v, u)) {
               *w_mut -= d;
@@ -54,8 +58,8 @@ where
 
   let mut flow = E::zero();
   loop {
-    let mut used = HashSet::new();
-    let f = dfs(&mut used, &mut cap, &g, s, t, E::max_value());
+    let mut visit_map = g.visit_map();
+    let f = dfs(&mut visit_map, &mut cap, &g, s, t, E::max_value());
     if f == E::zero() {
       return flow;
     }
@@ -71,8 +75,12 @@ where
   let g = UnGraph::from_edges(graph.edge_references().map(|e| (e.source(), e.target())));
   let mut cap = HashMap::new();
   for e in graph.edge_references() {
-    cap.insert((e.source(), e.target()), *e.weight());
-    cap.insert((e.target(), e.source()), E::zero());
+    if !cap.contains_key(&(e.source(), e.target())) {
+      cap.insert((e.source(), e.target()), *e.weight());
+    }
+    if !cap.contains_key(&(e.target(), e.source())) {
+      cap.insert((e.target(), e.source()), E::zero());
+    }
   }
 
   // s から各ノードへの最短距離の計算
